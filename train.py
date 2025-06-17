@@ -15,8 +15,8 @@ def get_state() -> str:
         ns: North-South
         ew: East-West
     """
-    ns = random.randint(0, 9)
-    ew = random.randint(0, 9)
+    ns = random.randint(0, 3)
+    ew = random.randint(0, 3)
     return f"{ns}_{ew}"
 
 def choose_action(state:str) -> str:
@@ -66,7 +66,7 @@ def train(episodes=1000):
         next_state = get_state()
         update_q(state, action, reward, next_state)
 
-def save_q_table(filename="qtable.json"):
+def save_q_table(filename="qtable.json", csvfile="qtable.csv"):
     with open(filename, "w") as f:
         json.dump(Q, f, indent=2)
 
@@ -83,7 +83,7 @@ def obtener_mejor_accion(state):
 train(10000)
 save_q_table("qtable.json")
 
-estado = "4_3"
+estado = "1_3"
 accion = obtener_mejor_accion(estado)
 
 if accion:
