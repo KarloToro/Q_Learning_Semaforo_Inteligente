@@ -79,7 +79,6 @@ def obtener_mejor_accion(state):
     mejor_accion = max(acciones, key=acciones.get)
     return mejor_accion
 
-
 # training
 train(10000)
 save_q_table("qtable.json")
