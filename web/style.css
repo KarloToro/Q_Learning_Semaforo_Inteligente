@@ -7,10 +7,10 @@ body {
   height: 100vh;
 }
 
-.intersection {
+.intersection { 
   position: relative;
-  width: 400px;
-  height: 400px;
+  width: 700px;
+  height: 700px;
 }
 
 /* Carreteras */
@@ -25,26 +25,17 @@ body {
   left: 0;
   transform: translateY(-50%);
   width: 100%;
-  height: 100px;
+  height: 150px;
 }
 
 .vertical {
   left: 50%;
   top: 0;
   transform: translateX(-50%);
-  width: 100px;
+  width: 150px;
   height: 100%;
 }
 
-/* Carriles blancos (opcional) */
-/* .road::before, .road::after {
-  content: "";
-  position: absolute;
-  background-color: white;
-  width: 4px;
-  height: 100%;
-  top: 0;
-} */
 .vertical .crosswalk-container {
     width: 100%;
     display: flex;
@@ -53,21 +44,21 @@ body {
 }
 .vertical .crosswalk {
     background-color: white;
-    width: 10px;
-    height: 50px;
+    width: 15px;
+    height: 80px;
 }
 .horizontal .crosswalk {
     background-color: white;
-    height: 10px;
-    width: 50px;
+    height: 15px;
+    width: 80px;
 }
 .vertical #crosswalk-container-v-1 {
     position: absolute;
-    top: 100px;
+    top: 150px;
 }
 .vertical #crosswalk-container-v-2 {
     position: absolute;
-    bottom: 100px;
+    bottom: 150px;
 }
 
 .horizontal .crosswalk-container {
@@ -79,62 +70,30 @@ body {
 
 .horizontal #crosswalk-container-h-1 {
     position: absolute;
-    left: 100px;
+    left: 150px;
 }
 .horizontal #crosswalk-container-h-2 {
     position: absolute;
-    right: 100px;
+    right: 150px;
 }
 
-.horizontal::before {
-  left: 30%;
+
+@keyframes moveDown {
+  0% {
+    top: -10%;
+  }
+  100% {
+    top: 110%;
+    transform: translateY(-100%);
+  }
 }
 
-.horizontal::after {
-  right: 30%;
-}
-
-.vertical::before {
-  top: 30%;
-  left: 0;
-  width: 100%;
-  height: 4px;
-}
-
-.vertical::after {
-  bottom: 30%;
-  left: 0;
-  width: 100%;
-  height: 4px;
-}
-
-/* Semáforos */
-.traffic-light {
+.car {
   width: 20px;
-  height: 60px;
-  background-color: red; /* Estado inicial */
-  position: absolute;
-  z-index: 2;
+  height: 40px;
   border-radius: 5px;
-  box-shadow: 0 0 5px #000;
-}
-
-.top-left {
-  top: 60px;
-  left: 60px;
-}
-
-.top-right {
-  top: 60px;
-  right: 60px;
-}
-
-.bottom-left {
-  bottom: 60px;
-  left: 60px;
-}
-
-.bottom-right {
-  bottom: 60px;
-  right: 60px;
+  background-color: #1919fd;
+  z-index: 100;
+  position: absolute;
+  animation: moveDown 10s linear forwards;
 }
