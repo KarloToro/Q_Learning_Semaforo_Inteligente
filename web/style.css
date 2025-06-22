@@ -106,6 +106,15 @@ body {
     transform: translateX(100%);
   }
 }
+@keyframes moveRight {
+  0% {
+    right: -10%;
+  }
+  100% {
+    right: 110%;
+    transform: translateX(-100%);
+  }
+}
 
 .car {
   width: 15px;
