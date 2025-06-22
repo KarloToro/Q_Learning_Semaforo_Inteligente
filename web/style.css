@@ -5,6 +5,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  overflow: hidden;
 }
 
 .intersection { 
@@ -25,14 +26,14 @@ body {
   left: 0;
   transform: translateY(-50%);
   width: 100%;
-  height: 150px;
+  height: 100px;
 }
 
 .vertical {
   left: 50%;
   top: 0;
   transform: translateX(-50%);
-  width: 150px;
+  width: 100px;
   height: 100%;
 }
 
@@ -44,21 +45,21 @@ body {
 }
 .vertical .crosswalk {
     background-color: white;
-    width: 15px;
-    height: 80px;
+    width: 10px;
+    height: 40px;
 }
 .horizontal .crosswalk {
     background-color: white;
-    height: 15px;
-    width: 80px;
+    height: 10px;
+    width: 40px;
 }
 .vertical #crosswalk-container-v-1 {
     position: absolute;
-    top: 150px;
+    top: 250px;
 }
 .vertical #crosswalk-container-v-2 {
     position: absolute;
-    bottom: 150px;
+    bottom: 250px;
 }
 
 .horizontal .crosswalk-container {
@@ -70,11 +71,11 @@ body {
 
 .horizontal #crosswalk-container-h-1 {
     position: absolute;
-    left: 150px;
+    left: 250px;
 }
 .horizontal #crosswalk-container-h-2 {
     position: absolute;
-    right: 150px;
+    right: 250px;
 }
 
 
@@ -87,13 +88,31 @@ body {
     transform: translateY(-100%);
   }
 }
+@keyframes moveUp {
+  0% {
+    bottom: -10%;
+  }
+  100% {
+    bottom: 110%;
+    transform: translateY(100%);
+  }
+}
+@keyframes moveLeft {
+  0% {
+    left: -10%;
+  }
+  100% {
+    left: 110%;
+    transform: translateX(100%);
+  }
+}
 
 .car {
-  width: 20px;
-  height: 20px;
-  border-radius: 5px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
   background-color: #1919fd;
   z-index: 100;
   position: absolute;
-  animation: moveDown 10s linear forwards;
+  /* animation: moveDown 10s linear forwards; */
 }
