@@ -124,4 +124,28 @@ body {
   z-index: 100;
   position: absolute;
   /* animation: moveDown 10s linear forwards; */
+  animation-duration: 10s;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.carY {
+  top: -10%;
+  right: 45%;
+  animation-name: moveDown;
+}
+.car-Y {
+  bottom: -10%;
+  left: 45%;
+  animation-name: moveUp;
+}
+.carX {
+  left: -10%;
+  bottom: 45%;
+  animation-name: moveRight;
+}
+.car-X {
+  right: -10%;
+  top: 45%;
+  animation-name: moveLeft;
 }
