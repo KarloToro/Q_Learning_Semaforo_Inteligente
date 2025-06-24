@@ -142,10 +142,10 @@ body {
 .carX {
   left: -10%;
   bottom: 45%;
-  animation-name: moveRight;
+  animation-name: moveLeft;
 }
 .car-X {
   right: -10%;
   top: 45%;
-  animation-name: moveLeft;
+  animation-name: moveRight;
 }
