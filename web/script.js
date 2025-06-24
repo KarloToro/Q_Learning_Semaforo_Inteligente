@@ -6,10 +6,36 @@ let timeOutIdXn; //-X
 let timeOutIdYp; //Y
 let timeOutIdYn; //-Y
 
+const translator = {
+    "Y" : ["top", "Height"],
+    "-Y" : ["bottom", "Height"],
+    "X" : ["left", "Width"],
+    "-X" : ["right", "Width"],
+}
+
 function generateCar(axis = "Y") {
     const carElement = document.createElement("div");
     carElement.classList.add("car");
     carElement.classList.add("car"+axis);
+
+    function monitorPosition() {
+        if ((!trafficEnabledY && axis.includes("Y")) || (!trafficEnabledX && axis.includes("X"))) {
+            const pos = translator[axis][0]
+            const posValue = parseFloat(getComputedStyle(carElement)[pos]);
+            const parentHeight = carElement.parentElement["client"+translator[axis][1]];
+            const posValueRatio = posValue / parentHeight;
+
+            if (posValueRatio <= 0.35) {
+                // Está en la zona peatonal o cerca, debe detenerse
+                carElement.style.animationPlayState = "paused";
+                return;
+            }
+        }
+
+        // Si aún no llegó o el tráfico sigue, seguir verificando
+        requestAnimationFrame(monitorPosition);
+    }
+    requestAnimationFrame(monitorPosition);
 
     carElement.addEventListener("animationend", () => {
         carElement.remove();
@@ -33,7 +59,6 @@ function startTrafficFlow(axis) {
         if (axis.includes("X") && !trafficEnabledX) return;
 
         generateCar(axis);
-
 
         if (axis === "Y") timeOutIdYp = timeoutId; // guardar el timeout solo para eje Y
         if (axis === "-Y") timeOutIdYn = timeoutId; // guardar el timeout solo para eje Y
