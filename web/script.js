@@ -25,13 +25,14 @@ function generateCar(axis = "Y") {
             const parentHeight = carElement.parentElement["client"+translator[axis][1]];
             const posValueRatio = posValue / parentHeight;
 
+            // const siblingPosValue = getComputedStyle(carElement.previousSibling)["top"]
+
             if (posValueRatio <= 0.35) {
                 // Está en la zona peatonal o cerca, debe detenerse
                 carElement.style.animationPlayState = "paused";
                 return;
             }
         }
-
         // Si aún no llegó o el tráfico sigue, seguir verificando
         requestAnimationFrame(monitorPosition);
     }
@@ -41,7 +42,7 @@ function generateCar(axis = "Y") {
         carElement.remove();
     });
 
-    document.getElementById("intersection").append(carElement);
+    document.getElementById("container"+axis).append(carElement);
 }
 
 
