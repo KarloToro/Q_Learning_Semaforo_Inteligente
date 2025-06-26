@@ -1,5 +1,5 @@
-let trafficEnabledY = true;
-let trafficEnabledX = false;
+let trafficEnabledY = false;
+let trafficEnabledX = true;
 
 let timeOutIdXp; //X
 let timeOutIdXn; //-X
@@ -20,35 +20,36 @@ function generateCar(axis = "Y") {
     
 
     function monitorPosition() {
-        if ((!trafficEnabledY && axis.includes("Y")) || (!trafficEnabledX && axis.includes("X"))) {
-            const pos = translator[axis][0]
-            const posValue = parseFloat(getComputedStyle(carElement)[pos]);
-            const parentHeight = carElement.parentElement["client"+translator[axis][1]];
-            const posValueRatio = posValue / parentHeight;
-            let siblingPosValue, siblingValueRatio;
-            let isFirst = false;
-            try {
-                siblingPosValue = parseFloat(getComputedStyle(carElement.previousSibling)[pos])
-                siblingValueRatio = siblingPosValue / parentHeight;
-            } catch (error) {
-                siblingValueRatio = 0;
-                isFirst;
+        const pos = translator[axis][0];
+        const posValue = parseFloat(getComputedStyle(carElement)[pos]);
+        const parentSize = carElement.parentElement["client" + translator[axis][1]];
+        const posRatio = posValue / parentSize;
+
+        // Condición para eje en rojo
+        const isRed = (!trafficEnabledY && axis.includes("Y")) || (!trafficEnabledX && axis.includes("X"));
+
+        let shouldPause = false;
+
+        if (isRed) {
+            let siblingRatio = -Infinity;
+            if (carElement.previousSibling && carElement.previousSibling.classList.contains("car")) {
+                const siblingValue = parseFloat(getComputedStyle(carElement.previousSibling)[pos]);
+                siblingRatio = siblingValue / parentSize;
             }
 
-            if (((posValueRatio >= 0.32 && posValueRatio <= 0.34) || isFirst) ||
-                (posValueRatio > siblingValueRatio - 0.025 && posValueRatio < siblingValueRatio)) {
-                // Está en la zona peatonal o cerca, debe detenerse
-                carElement.style.animationPlayState = "paused";
-            } else {
-                carElement.style.animationPlayState = "running";
+            // Solo se detiene si está muy cerca de la línea peatonal (zona crítica)
+            // o si está cerca del auto anterior (cola)
+            if ((posRatio >= 0.32 && posRatio <= 0.34) ||
+                (posRatio > siblingRatio - 0.025 && posRatio < siblingRatio)) {
+                shouldPause = true;
             }
-        } 
-        if ((trafficEnabledY && axis.includes("Y")) || (trafficEnabledX && axis.includes("X"))) {
-            carElement.style.animationPlayState = "running";
         }
-        // Si aún no llegó o el tráfico sigue, seguir verificando
-        requestAnimationFrame(monitorPosition);
+
+        carElement.style.animationPlayState = shouldPause ? "paused" : "running";
+
+        if (carElement.isConnected) requestAnimationFrame(monitorPosition);
     }
+
     
     carElement.addEventListener("animationend", () => {
         carElement.remove()
@@ -69,8 +70,8 @@ function startTrafficFlow(axis) {
         const randomDelay = Math.random() * 1000 + 400;
         const timeoutId = setTimeout(spawn, randomDelay);
 
-        if (axis.includes("Y") && !trafficEnabledY) return;
-        if (axis.includes("X") && !trafficEnabledX) return;
+        // if (axis.includes("Y") && !trafficEnabledY) return;
+        // if (axis.includes("X") && !trafficEnabledX) return;
 
         generateCar(axis);
 
