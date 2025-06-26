@@ -17,6 +17,7 @@ function generateCar(axis = "Y") {
     const carElement = document.createElement("div");
     carElement.classList.add("car");
     carElement.classList.add("car"+axis);
+    
 
     function monitorPosition() {
         if ((!trafficEnabledY && axis.includes("Y")) || (!trafficEnabledX && axis.includes("X"))) {
@@ -25,9 +26,11 @@ function generateCar(axis = "Y") {
             const parentHeight = carElement.parentElement["client"+translator[axis][1]];
             const posValueRatio = posValue / parentHeight;
 
-            // const siblingPosValue = getComputedStyle(carElement.previousSibling)["top"]
+            const siblingPosValue = parseFloat(getComputedStyle(carElement.previousSibling)[pos])
+            const siblingValueRatio = siblingPosValue / parentHeight;
 
-            if (posValueRatio <= 0.35) {
+            if ((posValueRatio > 0.33 && posValueRatio < 0.35) ||
+                (posValueRatio > siblingValueRatio - 0.025 && posValueRatio < siblingValueRatio)) {
                 // Está en la zona peatonal o cerca, debe detenerse
                 carElement.style.animationPlayState = "paused";
                 return;
@@ -39,7 +42,7 @@ function generateCar(axis = "Y") {
     requestAnimationFrame(monitorPosition);
 
     carElement.addEventListener("animationend", () => {
-        carElement.remove();
+        carElement.remove()
     });
 
     document.getElementById("container"+axis).append(carElement);
