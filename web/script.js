@@ -67,7 +67,7 @@ document.addEventListener("click", () => {
 
 function startTrafficFlow(axis) {
     function spawn() {
-        const randomDelay = Math.random() * 1000 + 400;
+        const randomDelay = Math.random() * 2000 + 1000;
         const timeoutId = setTimeout(spawn, randomDelay);
 
         // if (axis.includes("Y") && !trafficEnabledY) return;
