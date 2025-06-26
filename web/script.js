@@ -25,27 +25,37 @@ function generateCar(axis = "Y") {
             const posValue = parseFloat(getComputedStyle(carElement)[pos]);
             const parentHeight = carElement.parentElement["client"+translator[axis][1]];
             const posValueRatio = posValue / parentHeight;
+            let siblingPosValue, siblingValueRatio;
+            let isFirst = false;
+            try {
+                siblingPosValue = parseFloat(getComputedStyle(carElement.previousSibling)[pos])
+                siblingValueRatio = siblingPosValue / parentHeight;
+            } catch (error) {
+                siblingValueRatio = 0;
+                isFirst;
+            }
 
-            const siblingPosValue = parseFloat(getComputedStyle(carElement.previousSibling)[pos])
-            const siblingValueRatio = siblingPosValue / parentHeight;
-
-            if ((posValueRatio > 0.33 && posValueRatio < 0.35) ||
+            if (((posValueRatio >= 0.32 && posValueRatio <= 0.34) || isFirst) ||
                 (posValueRatio > siblingValueRatio - 0.025 && posValueRatio < siblingValueRatio)) {
                 // Está en la zona peatonal o cerca, debe detenerse
                 carElement.style.animationPlayState = "paused";
-                return;
+            } else {
+                carElement.style.animationPlayState = "running";
             }
+        } 
+        if ((trafficEnabledY && axis.includes("Y")) || (trafficEnabledX && axis.includes("X"))) {
+            carElement.style.animationPlayState = "running";
         }
         // Si aún no llegó o el tráfico sigue, seguir verificando
         requestAnimationFrame(monitorPosition);
     }
-    requestAnimationFrame(monitorPosition);
-
+    
     carElement.addEventListener("animationend", () => {
         carElement.remove()
     });
-
+    
     document.getElementById("container"+axis).append(carElement);
+    requestAnimationFrame(monitorPosition);
 }
 
 
@@ -56,7 +66,7 @@ document.addEventListener("click", () => {
 
 function startTrafficFlow(axis) {
     function spawn() {
-        const randomDelay = Math.random() * 1000 + 100;
+        const randomDelay = Math.random() * 1000 + 400;
         const timeoutId = setTimeout(spawn, randomDelay);
 
         if (axis.includes("Y") && !trafficEnabledY) return;
