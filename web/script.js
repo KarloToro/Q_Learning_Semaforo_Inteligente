@@ -70,9 +70,6 @@ function startTrafficFlow(axis) {
         const randomDelay = Math.random() * 2000 + 1000;
         const timeoutId = setTimeout(spawn, randomDelay);
 
-        // if (axis.includes("Y") && !trafficEnabledY) return;
-        // if (axis.includes("X") && !trafficEnabledX) return;
-
         generateCar(axis);
 
         if (axis === "Y") timeOutIdYp = timeoutId; // guardar el timeout solo para eje Y
