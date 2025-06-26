@@ -13,10 +13,17 @@ const translator = {
     "-X" : ["right", "Width"],
 }
 
+const counters = {
+    "Y" : 0,
+    "X" : 0,
+}
+
 function generateCar(axis = "Y") {
     const carElement = document.createElement("div");
     carElement.classList.add("car");
     carElement.classList.add("car"+axis);
+
+    
     
 
     function monitorPosition() {
@@ -50,12 +57,13 @@ function generateCar(axis = "Y") {
         if (carElement.isConnected) requestAnimationFrame(monitorPosition);
     }
 
+    document.getElementById("container"+axis).append(carElement);
+    counters[axis[axis.length-1]]++;
     
     carElement.addEventListener("animationend", () => {
-        carElement.remove()
+        carElement.remove();
+        counters[axis[axis.length-1]]--;
     });
-    
-    document.getElementById("container"+axis).append(carElement);
     requestAnimationFrame(monitorPosition);
 }
 
