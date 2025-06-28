@@ -1,0 +1,16 @@
+method,penalty,iterations;;;;;;;;
+q_learning,539,10000;;;;;;;;
+fast_switch,1407,10000;;;;;10k;100k;1M;
+modelo_entrenado,203,10000;;;;q_learning;539;3721;33945;
+q_learning,3721,100000;;;;fast_switch;1407;13755;139495;
+fast_switch,13755,100000;;;;modelo_entrenado;203;1902;16346;
+modelo_entrenado,1902,100000;;;;;;;;
+q_learning,33945,1000000;;;;;;;;
+fast_switch,139495,1000000;;;;;;Performance;;
+modelo_entrenado,16346,1000000;;;;;;10k;100k;1M
+;;;;;q_learning;2.61;3.70;4.11
+;;;;;fast_switch;1.00;1.00;1.00
+;;;;modelo_entrenado;modelo_entrenado;6.93;7.23;8.53
+;;;;;;;;
+;;;;;;;;
+;;;;Relacion entre q_learning y entrenado;;2.655172414;1.956361725;2.076654839

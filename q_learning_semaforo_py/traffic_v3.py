@@ -1,6 +1,7 @@
 import pygame
 import random
 import itertools
+import os, csv
 from collections import defaultdict
 from q_learning import QLearningAgent, Action
 
@@ -86,10 +87,6 @@ class Car(object):
                 self.drive = False
             if self.drive:
                 car.move_ip(0, -10)
-        # Record performance
-        if self.drive is False:
-            bucket = count // PERFORMANCE_STEPS
-            performance_dict[bucket] += 1
 
     def draw(self):
         pygame.draw.rect(screen, C1, self.rect) # Actualiza la posicion utilizando las coordenadas anteriores
@@ -139,12 +136,19 @@ def get_state(time_delay):
 # Función: Me permite crear un csv con las penalidades acumuladas de cada metodo
 # Parametros: Nombre del archivo, penalidades de cada metodo siendo en entrenamiento, enfoque tradicional y modelo entrenado los usados para las pruebas
 # Retorno: CSV 
-def write_comparison_results(filename, q_learning_penalty, fast_switch_penalty, modelo_entrenado_penalty):
-    with open(filename, 'w') as f:
-        f.write("method,penalty\n")
-        f.write(f"q_learning,{q_learning_penalty}\n")
-        f.write(f"fast_switch,{fast_switch_penalty}\n")
-        f.write(f"modelo_entrenado,{modelo_entrenado_penalty}\n")
+
+def write_comparison_results(filename, q_learning_penalty, fast_switch_penalty, modelo_entrenado_penalty, iteraciones):
+    # Si el archivo no existe, escribir encabezados
+    file_exists = os.path.isfile(filename)
+    
+    with open(filename, 'a', newline='') as f:
+        writer = csv.writer(f)
+        if not file_exists:
+            writer.writerow(["method", "penalty", "iterations"])  # Encabezados
+        writer.writerow(["q_learning", q_learning_penalty, iteraciones])
+        writer.writerow(["fast_switch", fast_switch_penalty, iteraciones])
+        writer.writerow(["modelo_entrenado", modelo_entrenado_penalty, iteraciones])
+
 
 # Función: Exportar q_table como array multimencional para los lenguajes de programación c/c++
 # Parametros: q_table entrenada y nombre del archivo
@@ -162,20 +166,24 @@ def export_q_table_to_cpp(q_table, filename):
             #f.write(f"{linea_stay}\n")
             #f.write(f"{linea_switch}\n")
 
+# Función: Exportar q_table como array multimencional para los lenguajes de programación c/c++
+# Parametros: None
+# Retorno: q_learning_penalty, q_learning_agent siendo el agente el objeto completo una vez se finalizo el entrenamiento
 def run_q_learning():
-    clock = pygame.time.Clock()
+    #clock = pygame.time.Clock()
     screen.fill(WHITE)
     q_learning_agent = QLearningAgent(state=get_state(0), action=Action.STAY)
     q_learning_penalty = 0
     time_delay = 0
 
     for count in range(ITERACIONES):
-        #screen.fill(WHITE)
+        #verifica que el estado de la ventana de pygame y si no ha sido cerrada
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-        if count % (random.randint(0, 10) + 5) == 0:
+        # De forma aleatoria genera un carro 
+        if count % (random.randint(0, 10) + 5) == 0: #ocurre el evento si count es divisible con el numero aleatorio generado (rango de 5 a 15) 
             car_to_append = random.randint(0, 3)
             if car_to_append == 0:
                 topCars.append(Car(307, 0, 10, 10, topLight, topCars))
@@ -188,8 +196,10 @@ def run_q_learning():
         # Draw lanes
         pygame.draw.rect(screen, BLACK, (280, 0, 38, 600))
         pygame.draw.rect(screen, BLACK, (0, 280, 600, 38))
-        #para entrenar aprovecho al epsilon de next_best_action
-        action = q_learning_agent.next_best_action(state=get_state(time_delay))
+        #Para entrenar la tabla Q y explorar el espacio de estados se utiliza next_best_action
+        action = q_learning_agent.next_best_action(state=get_state(time_delay)) 
+        #es importante recordar que en todo momento el Q_Agent conoce el estado y accion actuales (t)
+        # y gracias a next_best action actualiza la tabla Q y devuelve la mejor decision para el siguiente periodo (t+1)
         for l in lights:
             l.draw()
 
@@ -200,17 +210,20 @@ def run_q_learning():
 
         for carGroup in allCars:
             for c in carGroup:
-                c.update(count=count)
+                c.update(count=count) #P: Como es que se utiliza count en este codigo ¿CUAL Es? R: en este caso ya no tiene funcion pues implemente mi propio metodo de penalidad verdad?
                 c.draw() #agregado
                 if not c.drive:
                     q_learning_penalty += 1
 
         time_delay = max(time_delay - 1, 0)
-        clock.tick(30)
+        #clock.tick(30) 
         pygame.display.update()
-    export_q_table_to_cpp(q_learning_agent._q_table, "q_table_traffic_definitivo.h")
+    export_q_table_to_cpp(q_learning_agent._q_table, "q_table_traffic.h")
     return q_learning_penalty, q_learning_agent
 
+# Función: Exportar q_table como array multimencional para los lenguajes de programación c/c++
+# Parametros: None
+# Retorno: q_learning_penalty, q_learning_agent siendo el agente el objeto completo una vez se finalizo el entrenamiento
 def run_fast_switch():
     fast_switch_penalty = 0
     for count in range(ITERACIONES):
@@ -225,8 +238,8 @@ def run_fast_switch():
             elif car_to_append == 3:
                 bottomCars.append(Car(283, 590, 10, 10, bottomLight, bottomCars))
 
-        if count % 3 == 0: #aqui debe cambiar cada 3 para hacerlo justo
-            for l in lights:
+        if count % 3 == 0: #aqui debe cambiar cada 3 para hacerlo justo pues actua 
+            for l in lights: #como un sem tracional, el cambio es ciclico y a intervalos fijos
                 l.switch()
 
         for carGroup in allCars:
@@ -285,7 +298,7 @@ def start():
     q_learning_penalty = retorno_q_learning[0]
     fast_switch_penalty = run_fast_switch()
     modelo_entrenado_penalty = run_modelo_entrenado(retorno_q_learning[1])
-    write_comparison_results("penalty_results_3_Semaforo_correcto.csv", q_learning_penalty, fast_switch_penalty,modelo_entrenado_penalty)
+    write_comparison_results("penalty_results_3_Semaforo_correcto.csv", q_learning_penalty, fast_switch_penalty,modelo_entrenado_penalty,ITERACIONES)
     pygame.quit()
 
 if __name__ == '__main__':
@@ -301,11 +314,6 @@ if __name__ == '__main__':
     rightCars = []
     allCars = [topCars, leftCars, rightCars, bottomCars]
 
-    ITERACIONES=1000000
-
-    PERFORMANCE_STEPS = 1000
-    performance_dict = defaultdict(int)
+    ITERACIONES=10000000
 
     start()
-
-
